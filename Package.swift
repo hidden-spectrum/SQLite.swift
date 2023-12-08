@@ -13,13 +13,37 @@ let package = Package(
         .library(
             name: "SQLite",
             targets: ["SQLite"]
+        ),
+        .library(
+            name: "SQLCipher",
+            targets: ["SQLCipher"]
         )
     ],
     targets: [
         .target(
             name: "SQLite",
+            dependencies: [
+                "SQLCipher"
+            ],
             exclude: [
                 "Info.plist"
+            ],
+            cSettings: [
+                .define("SQLITE_HAS_CODEC")
+            ],
+            swiftSettings: [
+                .define("SQLITE_SWIFT_SQLCIPHER"),
+            ]
+        ),
+        .target(
+            name: "SQLCipher",
+            publicHeadersPath: ".",
+            cSettings: [
+                .define("SQLITE_HAS_CODEC"),
+                .define("SQLCIPHER_CRYPTO_CC"),
+                .define("NDEBUG"),
+                .define("SQLITE_TEMP_STORE", to: "3"),
+                .unsafeFlags(["-w"])
             ]
         ),
         .testTarget(
